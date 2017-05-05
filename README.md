@@ -1,5 +1,4 @@
-# A repo of Logic for Programming, using Prolog
-
+# A repo of Logic for Programming
 
 In this project, i will build a Sudoku puzzle solver, using Prolog.
 
