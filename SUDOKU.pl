@@ -2,7 +2,7 @@
 %             Definicao da dimensao do puzzle
 %---------------------------------------------------------------------
 
-dimensao(9).
+dimensao(4).  % so para testar e ser mais facil dar debug %
 
 %---------------------------------------------------------------------
 %
