@@ -141,3 +141,14 @@ inspecciona(Puz, N_Puz) :-
     %      Predicados para verificacao de solucoes      %
     %                                                   %
     % ################################################# %
+
+
+grupo_correcto(Puz, Nums, Gr) :-
+    conteudos_posicoes(Puz,Gr,Conteudos),
+    flatten(Conteudos, Cont_Flat),
+    msort(Cont_Flat, Nums).
+
+solucao(Puz) :-
+    numeros(L),
+    grupos(Gr),
+    maplist(grupo_correcto(Puz, L), Gr).
