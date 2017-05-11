@@ -138,45 +138,54 @@ inicializa(Puz, N_Puz) :-
 %     num_ocor(Num, T, Num_Ocor).
 
 
-num_ocor_2(_, [], Acc, Acc).
+num_ocor_2(_, [], _, []).
 
-num_ocor_2(Num, [H|T], Ocorrencias, Acc):-
+num_ocor_2(Num, [H|T], [P|R], [P|R1]):-
+    % writeln("valor num"),
     % writeln(Num),
+    % writeln("valor H"),
     % writeln(H),
+    % writeln("valor P"),
+    % writeln(P),
     member(Num,H), !,
-    Acc1 is Acc + 1,
-    num_ocor_2(Num, T, Ocorrencias, Acc1).
+    % writeln("am member"),
+    num_ocor_2(Num, T, R, R1).
 
-num_ocor_2(Num, [H|T], Ocorrencias, Acc) :-
+num_ocor_2(Num, [H|T], [_|R], R1) :-
     \+member(Num, H),
-    num_ocor_2(Num, T, Ocorrencias, Acc).
+    % writeln("not member"),
+
+    num_ocor_2(Num, T, R, R1).
 
 
 
-return_pos(Puz, Num,[H|T], Result) :-
-    % writeln(Num),
-    puzzle_ref(Puz, H, Cont),
-    \+member(Num, Cont), !,
-    return_pos(Puz, Num, T, Result).
-
-return_pos(Puz, Num, [H|_], H) :-
-    % writeln(Num),
-    % writeln(H),
-    puzzle_ref(Puz, H, [Num]).
-    % writeln(H),
-    % append(H,[],Result).
+% return_pos(Puz, Num,[H|T], Result) :-
+%     % writeln(Num),
+%     puzzle_ref(Puz, H, Cont),
+%     \+member(Num, Cont), !,
+%     return_pos(Puz, Num, T, Result).
+%
+% return_pos(Puz, Num, [H|_], H) :-
+%     % writeln(Num),
+%     % writeln(H),
+%     puzzle_ref(Puz, H, [Num]).
+%     % writeln(H),
+%     % append(H,[],Result).
 
 
 so_aparece_uma_vez(Puz, Num, Posicoes, Pos_Num) :-
     % writeln("entrei no so_aparece_uma_vez"),
     conteudos_posicoes(Puz,Posicoes,Conteudos),
     % writeln("step 2"),
-    num_ocor_2(Num, Conteudos, Ocorrencias, 0),
+
+    num_ocor_2(Num, Conteudos, Posicoes, [Pos_Num]).
     % writeln("step 3"),
     % writeln(Ocorrencias),
-    Ocorrencias =:= 1,
+    % length(Ocorrencias,1),
+
+    % append(Pos,[],Pos_Num),
     % writeln(Ocorrencias),
-    return_pos(Puz, Num, Posicoes, Pos_Num).
+    % return_pos(Puz, Num, Posicoes, Pos_Num).
 
 
 inspecciona_num(Posicoes, Puz, Num, N_Puz) :-
