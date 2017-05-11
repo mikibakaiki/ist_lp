@@ -68,10 +68,6 @@ possibilidades_aux(Puz, [H|T], L, Result):-
     % writeln("not single"),
     possibilidades_aux(Puz, T, L, Result).
 
-% possibilidades_aux(_, [],L, Result):-
-%     append(L,[],Result),!.
-
-
 possibilidades(Pos, Puz, Poss) :-
     puzzle_ref(Pos, Puz, [Poss]).
 
@@ -80,16 +76,6 @@ possibilidades(Pos, Puz, Poss) :-
     posicoes_relacionadas(Pos, Posicoes),
     conteudos_posicoes(Puz, Posicoes, Conteudos),
     possibilidades_aux(Puz, Conteudos, L, Poss).
-
-
-
-%
-%----- ERROS -----
-% devolve o P2, dunno why
-% Nao esta a actualizar o valor depois de algum numero ser escolhido noutra coordenada.
-%-----------------
-%
-
 
 
 inicializa_aux(Puz, Pos, N_Puz) :-
@@ -118,75 +104,19 @@ inicializa(Puz, N_Puz) :-
     %                                                   %
     % ################################################# %
 
-
-% num_ocor(_, [], 0).
-%
-% num_ocor(Num, [H|T], Num_Ocor) :-
-%     member(Num, H),!,
-%     % writeln(Num),
-%     % writeln(H),
-%     % writeln("member"),
-%     num_ocor(Num, T, Num_Ocor_Aux),
-%     Num_Ocor is Num_Ocor_Aux + 1.
-%
-%
-% num_ocor(Num, [H|T], Num_Ocor) :-
-%     \+member(Num, H),
-%     % writeln(Num),
-%     % writeln(H),
-%     % writeln("not member"),
-%     num_ocor(Num, T, Num_Ocor).
-
-
 num_ocor_2(_, [], _, []).
 
 num_ocor_2(Num, [H|T], [P|R], [P|R1]):-
-    % writeln("valor num"),
-    % writeln(Num),
-    % writeln("valor H"),
-    % writeln(H),
-    % writeln("valor P"),
-    % writeln(P),
     member(Num,H), !,
-    % writeln("am member"),
     num_ocor_2(Num, T, R, R1).
 
 num_ocor_2(Num, [H|T], [_|R], R1) :-
     \+member(Num, H),
-    % writeln("not member"),
-
     num_ocor_2(Num, T, R, R1).
 
-
-
-% return_pos(Puz, Num,[H|T], Result) :-
-%     % writeln(Num),
-%     puzzle_ref(Puz, H, Cont),
-%     \+member(Num, Cont), !,
-%     return_pos(Puz, Num, T, Result).
-%
-% return_pos(Puz, Num, [H|_], H) :-
-%     % writeln(Num),
-%     % writeln(H),
-%     puzzle_ref(Puz, H, [Num]).
-%     % writeln(H),
-%     % append(H,[],Result).
-
-
 so_aparece_uma_vez(Puz, Num, Posicoes, Pos_Num) :-
-    % writeln("entrei no so_aparece_uma_vez"),
     conteudos_posicoes(Puz,Posicoes,Conteudos),
-    % writeln("step 2"),
-
     num_ocor_2(Num, Conteudos, Posicoes, [Pos_Num]).
-    % writeln("step 3"),
-    % writeln(Ocorrencias),
-    % length(Ocorrencias,1),
-
-    % append(Pos,[],Pos_Num),
-    % writeln(Ocorrencias),
-    % return_pos(Puz, Num, Posicoes, Pos_Num).
-
 
 inspecciona_num(Posicoes, Puz, Num, N_Puz) :-
     so_aparece_uma_vez(Puz, Num, Posicoes, Pos_Num),
@@ -204,3 +134,10 @@ inspecciona_grupo(Puz, Gr, N_Puz) :-
 inspecciona(Puz, N_Puz) :-
     grupos(Gr),
     percorre_muda_Puz(Puz, inspecciona_grupo, Gr, N_Puz).
+
+
+    % ################################################# %
+    %                                                   %
+    %      Predicados para verificacao de solucoes      %
+    %                                                   %
+    % ################################################# %
