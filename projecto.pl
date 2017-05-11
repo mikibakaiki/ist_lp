@@ -53,23 +53,26 @@ tira_num(Num, Puz, Posicoes, N_Puz) :-
     %                                                   %
     % ################################################# %
 
+possibilidades_aux(_, [],L, Result):-
+    append(L,[],Result),!.
 
 possibilidades_aux(Puz, [H|T], L, Result):-
-    length(H, 1),
+    length(H, 1),!,
     % writeln("single"),
     subtract(L, H, New_List),
     % writeln(New_List),
     possibilidades_aux(Puz, T, New_List, Result).
 
 possibilidades_aux(Puz, [H|T], L, Result):-
-    \+length(H, 1),
+    \+length(H, 1), !,
     % writeln("not single"),
     possibilidades_aux(Puz, T, L, Result).
 
-possibilidades_aux(_, [],L, Result):-
-    append(L,[],Result).
+% possibilidades_aux(_, [],L, Result):-
+%     append(L,[],Result),!.
 
- possibilidades(Pos, Puz, Poss) :-
+
+possibilidades(Pos, Puz, Poss) :-
     puzzle_ref(Pos, Puz, [Poss]).
 
 possibilidades(Pos, Puz, Poss) :-
@@ -116,43 +119,60 @@ inicializa(Puz, N_Puz) :-
     % ################################################# %
 
 
-num_ocor(_, [], 0).
+% num_ocor(_, [], 0).
+%
+% num_ocor(Num, [H|T], Num_Ocor) :-
+%     member(Num, H),!,
+%     % writeln(Num),
+%     % writeln(H),
+%     % writeln("member"),
+%     num_ocor(Num, T, Num_Ocor_Aux),
+%     Num_Ocor is Num_Ocor_Aux + 1.
+%
+%
+% num_ocor(Num, [H|T], Num_Ocor) :-
+%     \+member(Num, H),
+%     % writeln(Num),
+%     % writeln(H),
+%     % writeln("not member"),
+%     num_ocor(Num, T, Num_Ocor).
 
-num_ocor(Num, [H|T], Num_Ocor) :-
-    member(Num, H),
+
+num_ocor_2(_, [], Acc, Acc).
+
+num_ocor_2(Num, [H|T], Ocorrencias, Acc):-
     % writeln(Num),
     % writeln(H),
-    % writeln("member"),
-    num_ocor(Num, T, Num_Ocor_Aux),
-    Num_Ocor is Num_Ocor_Aux + 1.
+    member(Num,H), !,
+    Acc1 is Acc + 1,
+    num_ocor_2(Num, T, Ocorrencias, Acc1).
 
-
-num_ocor(Num, [H|T], Num_Ocor) :-
+num_ocor_2(Num, [H|T], Ocorrencias, Acc) :-
     \+member(Num, H),
-    % writeln(Num),
-    % writeln(H),
-    % writeln("not member"),
-    num_ocor(Num, T, Num_Ocor).
+    num_ocor_2(Num, T, Ocorrencias, Acc).
+
 
 
 return_pos(Puz, Num,[H|T], Result) :-
     % writeln(Num),
     puzzle_ref(Puz, H, Cont),
-    \+member(Num, Cont),
+    \+member(Num, Cont), !,
     return_pos(Puz, Num, T, Result).
 
-return_pos(Puz, Num, [H|_], Result) :-
+return_pos(Puz, Num, [H|_], H) :-
     % writeln(Num),
     % writeln(H),
-    puzzle_ref(Puz, H, [Num]),
+    puzzle_ref(Puz, H, [Num]).
     % writeln(H),
-    append([],H,Result).
-
+    % append(H,[],Result).
 
 
 so_aparece_uma_vez(Puz, Num, Posicoes, Pos_Num) :-
+    % writeln("entrei no so_aparece_uma_vez"),
     conteudos_posicoes(Puz,Posicoes,Conteudos),
-    num_ocor(Num, Conteudos, Ocorrencias),
+    % writeln("step 2"),
+    num_ocor_2(Num, Conteudos, Ocorrencias, 0),
+    % writeln("step 3"),
     % writeln(Ocorrencias),
     Ocorrencias =:= 1,
     % writeln(Ocorrencias),
