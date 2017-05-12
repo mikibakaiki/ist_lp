@@ -4,10 +4,8 @@
     %                                                   %
     % ################################################# %
 
-
 :- include('SUDOKU').
 :- ['exemplos.pl'].
-
 
     % ################################################# %
     %                                                   %
@@ -36,6 +34,8 @@ puzzle_muda_propaga(Puz, Pos, [Num], New_Puz) :- !,
 % Tamanho de Cont =/= 1, entao e igual a puzzle_muda().
 
 puzzle_muda_propaga(Puz, Pos, Cont, N_Puz) :-
+    \+length(Cont, 0),
+    \+length(Cont, 1),
     puzzle_muda(Puz, Pos, Cont, N_Puz).
 
 tira_num_aux(Num, Puz, Pos, N_Puz) :-
@@ -53,17 +53,17 @@ tira_num(Num, Puz, Posicoes, N_Puz) :-
     %                                                   %
     % ################################################# %
 
-possibilidades_aux(_, [],L, Result):-
+possibilidades_aux(_, [],L, Result) :-
     append(L,[],Result),!.
 
-possibilidades_aux(Puz, [H|T], L, Result):-
+possibilidades_aux(Puz, [H|T], L, Result) :-
     length(H, 1),!,
     % writeln("single"),
     subtract(L, H, New_List),
     % writeln(New_List),
     possibilidades_aux(Puz, T, New_List, Result).
 
-possibilidades_aux(Puz, [H|T], L, Result):-
+possibilidades_aux(Puz, [H|T], L, Result) :-
     \+length(H, 1), !,
     % writeln("not single"),
     possibilidades_aux(Puz, T, L, Result).
@@ -81,20 +81,21 @@ possibilidades(Pos, Puz, Poss) :-
 inicializa_aux(Puz, Pos, N_Puz) :-
     % writeln("inicializa_aux p/ verificar se tem length 1"),
     puzzle_ref(Puz, Pos, Cont),
-    length(Cont,1),
+    length(Cont,1), !,
     % writeln(Puz),
     append(Puz,[],N_Puz).
 
 inicializa_aux(Puz, Pos, N_Puz) :-
     % writeln("Segundo inicializa_aux"),
     possibilidades(Pos, Puz, Poss),
+    \+length(Poss, 0),
     % writeln(Poss),
     puzzle_muda_propaga(Puz, Pos, Poss, N_Puz).
 
 
 inicializa(Puz, N_Puz) :-
     todas_posicoes(Todas_Pos),
-    percorre_muda_Puz(Puz, inicializa_aux, Todas_Pos, N_Puz).
+    percorre_muda_Puz(Puz, inicializa_aux, Todas_Pos, N_Puz), !.
 
 
 
@@ -106,7 +107,7 @@ inicializa(Puz, N_Puz) :-
 
 num_ocor_2(_, [], _, []).
 
-num_ocor_2(Num, [H|T], [P|R], [P|R1]):-
+num_ocor_2(Num, [H|T], [P|R], [P|R1]) :-
     member(Num,H), !,
     num_ocor_2(Num, T, R, R1).
 
@@ -114,17 +115,19 @@ num_ocor_2(Num, [H|T], [_|R], R1) :-
     \+member(Num, H),
     num_ocor_2(Num, T, R, R1).
 
+
 so_aparece_uma_vez(Puz, Num, Posicoes, Pos_Num) :-
     conteudos_posicoes(Puz,Posicoes,Conteudos),
     num_ocor_2(Num, Conteudos, Posicoes, [Pos_Num]).
 
+
 inspecciona_num(Posicoes, Puz, Num, N_Puz) :-
     so_aparece_uma_vez(Puz, Num, Posicoes, Pos_Num),
     puzzle_ref(Puz, Pos_Num, Cont),
-    \+length(Cont, 1),
+    \+length(Cont, 1), !,
     puzzle_muda_propaga(Puz, Pos_Num, [Num], N_Puz).
 
-inspecciona_num(_, Puz, _, N_Puz) :-
+inspecciona_num(_, Puz, _, N_Puz) :- !,
     append(Puz, [], N_Puz).
 
 inspecciona_grupo(Puz, Gr, N_Puz) :-
@@ -133,7 +136,7 @@ inspecciona_grupo(Puz, Gr, N_Puz) :-
 
 inspecciona(Puz, N_Puz) :-
     grupos(Gr),
-    percorre_muda_Puz(Puz, inspecciona_grupo, Gr, N_Puz).
+    percorre_muda_Puz(Puz, inspecciona_grupo, Gr, N_Puz), !.
 
 
     % ################################################# %
@@ -152,3 +155,62 @@ solucao(Puz) :-
     numeros(L),
     grupos(Gr),
     maplist(grupo_correcto(Puz, L), Gr).
+
+
+procura_posicoes(Puz, [], Puz).
+    % writeln("pos sao vazias").
+
+procura_posicoes(Puz, _, Puz) :-
+    solucao(Puz), !.
+
+procura_posicoes(Puz, [Head_Pos|Tail_Pos], New_Puz) :-
+    puzzle_ref(Puz, Head_Pos, Cont),
+    length(Cont, 1),
+    % writeln("encontrei uma lista unitaria"),
+    procura_posicoes(Puz, Tail_Pos, New_Puz).
+
+procura_posicoes(Puz, [Head_Pos|Tail_Pos], New_Puz) :-
+    % writeln("entrei no caso 2 de procura_posicoes"),
+    puzzle_ref(Puz, Head_Pos, Cont),
+    \+length(Cont, 0),
+    % writeln("lista nao e vazia e nao tem so 1 elemnt"),
+    pos_para_cont(Puz, Head_Pos, Cont, N_Puz),
+    procura_posicoes(N_Puz, Tail_Pos, New_Puz).
+
+
+
+
+pos_para_cont(Puz, _, [], Puz).
+
+pos_para_cont(Puz, Pos, [Head_Cont|_], New_Puz) :-
+    % writeln("pos_para_cont 2nd branch"),
+    puzzle_muda_propaga(Puz, Pos, [Head_Cont], New_Puz).
+    % escreve(N_Puz),
+    % inspecciona(N_Puz, New_Puz).
+    % solucao(New_Puz).
+
+pos_para_cont(Puz, Pos, [_|Tail_Cont], Result) :-
+    \+length(Tail_Cont, 0),
+    pos_para_cont(Puz, Pos, Tail_Cont, Result).
+
+
+resolve(Puz, Sol) :-
+    % writeln("step 1 - primeiro caso "),
+    inicializa(Puz, Puz_Inicializado),
+    % writeln("step 2 - segundo caso "),
+    inspecciona(Puz_Inicializado, Sol),
+    % writeln("step 3 - terceiro caso "),
+    solucao(Sol), !.
+
+resolve(Puz, Sol) :-
+    % writeln("step 1"),
+    inicializa(Puz, Puz_Inicializado),
+    % writeln("step 2"),
+    inspecciona(Puz_Inicializado, Puz_Inspeccionado),
+    % writeln("step 3"),
+    todas_posicoes(Todas_Pos),
+    % writeln("step 4"),
+    procura_posicoes(Puz_Inspeccionado, Todas_Pos, Sol),
+    % writeln("step 5"),
+    % escreve(Sol),
+    solucao(Sol), !.
