@@ -79,7 +79,7 @@ possibilidades_aux(_, [],L, Result) :-
 % esse conteudo da lista L.
 
 possibilidades_aux(Puz, [H|T], L, Result) :-
-    length(H, 1),!,
+    length(H, 1), !,
     subtract(L, H, New_List),
     possibilidades_aux(Puz, T, New_List, Result).
 
@@ -235,6 +235,7 @@ solucao(Puz) :-
 % e uma lista com todas as posicoes do puzzle, e devolve uma solucao Sol.
 %---------------------------------------------------------------------
 
+
 % Base de recursao.
 
 procura_posicoes(Puz, [], Puz).
@@ -248,7 +249,7 @@ procura_posicoes(Puz, _, Puz) :-
 
 
 % Se a posicao Head_Pos tiver como conteudo uma lista unitaria,
-% entao avalia a proxima posição.
+% entao avalia a proxima posicao.
 
 procura_posicoes(Puz, [Head_Pos|Tail_Pos], New_Puz) :-
     puzzle_ref(Puz, Head_Pos, Cont),
@@ -265,6 +266,7 @@ procura_posicoes(Puz, [Head_Pos|Tail_Pos], New_Puz) :-
     \+length(Cont, 0),
     pos_para_cont(Puz, Head_Pos, Cont, N_Puz),
     procura_posicoes(N_Puz, Tail_Pos, New_Puz).
+
 
 
 %---------------------------------------------------------------------
@@ -304,7 +306,6 @@ resolve(Puz, Sol) :-
 % Caso onde vamos encontrar a solucao atraves de tentativa e erro.
 
 resolve(Puz, Sol) :-
-
     inicializa(Puz, Puz_Inicializado),
     inspecciona(Puz_Inicializado, Puz_Inspeccionado),
     todas_posicoes(Todas_Pos),
