@@ -1,4 +1,4 @@
-## Logic for Programming Project - 2 Semester 2016/2017 ##
+## Logic for Programming Project | 2 Semester 2016/2017 ##
 
 **Course:** Lógica para Programção (LP) | Logic for Programming
 
